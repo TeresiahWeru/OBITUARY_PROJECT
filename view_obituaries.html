@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Obituaries</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            margin: 0 5px;
+            padding: 8px 16px;
+            text-decoration: none;
+            border: 1px solid #ccc;
+            color: #333;
+        }
+
+        .pagination a.active {
+            background-color: #4CAF50;
+            color: white;
+            border: 1px solid #4CAF50;
+        }
+
+        .pagination a:hover:not(.active) {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Obituaries</h1>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Date of Birth</th>
+            <th>Date of Death</th>
+            <th>Content</th>
+            <th>Author</th>
+            <th>Submission Date</th>
+            <th>Slug</th>
+        </tr>
+        {% for obituary in page_obj %}
+        <tr>
+            <td>{{ obituary.name }}</td>
+            <td>{{ obituary.date_of_birth }}</td>
+            <td>{{ obituary.date_of_death }}</td>
+            <td>{{ obituary.content }}</td>
+            <td>{{ obituary.author }}</td>
+            <td>{{ obituary.submission_date }}</td>
+            <td>{{ obituary.slug }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; First</a>
+            <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <a href="?page={{ num }}" class="active">{{ num }}</a>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+        {% endif %}
+    </div>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ obituary.name }} - Obituary</title>
+    <meta name="description" content="{{ obituary.content|truncatewords:30 }}">
+    <meta name="keywords" content="obituary, {{ obituary.name }}, {{ obituary.author }}">
+    <!-- Open Graph tags -->
+    <meta property="og:title" content="{{ obituary.name }} - Obituary">
+    <meta property="og:description" content="{{ obituary.content|truncatewords:30 }}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:site_name" content="Obituary Platform">
+    <!-- Canonical tag -->
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .obituary {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .content {
+            margin-top: 20px;
+        }
+
+        .social-sharing {
+            margin-top: 20px;
+        }
+
+        .social-sharing a {
+            text-decoration: none;
+            margin-right: 10px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="obituary">
+        <h1>{{ obituary.name }}</h1>
+        <p><strong>Born:</strong> {{ obituary.date_of_birth }}</p>
+        <p><strong>Died:</strong> {{ obituary.date_of_death }}</p>
+        <div class="content">
+            {{ obituary.content }}
+        </div>
+        <div class="social-sharing">
+            <h3>Share this obituary:</h3>
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank">Facebook</a>
+            <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}" target="_blank">Twitter</a>
+        </div>
+    </div>
+</body>
+</html>
+<div class="obituary" itemscope itemtype="http://schema.org/Obituary">
+    <h1 itemprop="name">{{ obituary.name }}</h1>
+    <p><strong>Born:</strong> <span itemprop="birthDate">{{ obituary.date_of_birth }}</span></p>
+    <p><strong>Died:</strong> <span itemprop="deathDate">{{ obituary.date_of_death }}</span></p>
+    <div class="content" itemprop="text">
+        {{ obituary.content }}
+    </div>
+    <div class="social-sharing">
+        <h3>Share this obituary:</h3>
+        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank">Facebook</a>
+        <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}" target="_blank">Twitter</a>
+    </div>
+</div>
